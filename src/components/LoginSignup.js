@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { useState } from "react"
 import axios, { Axios } from "axios";
 import {useNavigate} from "react-router-dom";
@@ -15,28 +15,59 @@ const[Username2,SetUsername2] = useState();
 const[University2,SetUniversity2] = useState();
 const[Age2,SetAge2] = useState();
 const[errorStatus,setError] = useState();
- const navigate = useNavigate();
+const navigate = useNavigate();
 const changeScreenPage =()=>{
     Page?SetPage(false):SetPage(true);
     console.log(Page);
 }
 
-const JWTTest = async(e) =>{
+useEffect(() => {
+    // axios.defaults.withCredentials = true;
+    // axios.defaults.headers.common['Access-Control-Allow-Credentials'] = true;
+    // axios.defaults.headers.common['Access-Control-Allow-Origin'] = 'http://localhost:3001';
+    // axios.post('http://localhost:3001/JWTAuthenticate').then((response) => {
+    // const data = response.data;
+    // if(data === "Valid Token"){
+    //     navigate('/account');
+    //     console.log("Valid Token");
+    // }else{
+    //     console.log("Invalid Token");
+    // }
     axios.defaults.withCredentials = true;
     axios.defaults.headers.common['Access-Control-Allow-Credentials'] = true;
-    await axios.post('http://localhost:3001/JWTAuthenticate').catch(function (error) {
+    axios.defaults.headers.common['Access-Control-Allow-Origin'] = 'http://localhost:3001';
+    axios.post('http://localhost:3001/JWTAuthenticate').catch(function (error) {
         console.log(error);
     }).then((response) => {
-        const data = response.data;
-        console.log(data);
+    const data = response.data;
+    console.log(data);
+    if(data === "Valid Token"){
+        console.log("Valid Token");
+        navigate('/');
+    }else{
+        console.log("Invalid Token");
+    }
     });
+},[]);
+
+// const JWTTest = async(e) =>{
+//     axios.defaults.withCredentials = true;
+//     axios.defaults.headers.common['Access-Control-Allow-Credentials'] = true;
+//     axios.defaults.headers.common['Access-Control-Allow-Origin'] = 'http://localhost:3001';
+//     await axios.post('http://localhost:3001/JWTAuthenticate',{jwt:"jwt"}).catch(function (error) {
+//         console.log(error);
+//     }).then((response) => {
+//         const data = response.data;
+//         console.log(data);
+//     });
     
-}
+// }
 
 const SignupPost = async(e) =>{
     e.preventDefault();
     axios.defaults.withCredentials = true;
     axios.defaults.headers.common['Access-Control-Allow-Credentials'] = true;
+    axios.defaults.headers.common['Access-Control-Allow-Origin'] = 'http://localhost:3001';
 
 await axios.post('http://localhost:3001/SignUp', {
         username: Username,
@@ -52,7 +83,6 @@ await axios.post('http://localhost:3001/SignUp', {
 })      // ,{withCredentials: true,}
     .then( (response) => {
         const data = response.data;
-        
         if(data === "Data inserted"){
             console.log("Data inserted");
             navigate('/');
@@ -62,6 +92,7 @@ await axios.post('http://localhost:3001/SignUp', {
     })
     .catch( (error) => {
         setError("Server Error");
+        console.log(error.name);
     }); 
 
 
@@ -69,8 +100,8 @@ await axios.post('http://localhost:3001/SignUp', {
 
     return (
         <>
-        
-        <div className={Page?"container right-panel-active":"container"} id="container">
+        <div className="App-loginSignUp">
+       <div className={Page?"container right-panel-active":"container"} id="container">
         <div className="form-container sign-up-container right-panel-active " >
         <form  onSubmit={SignupPost} >
         <div><center className="error-status">{errorStatus}</center></div>
@@ -114,7 +145,8 @@ await axios.post('http://localhost:3001/SignUp', {
         </div>
     </div>
     </div>
-</div>
+    </div>
+    </div>
 
 </>
 
